@@ -1,0 +1,63 @@
+<div class="dashboard-layout">
+  <header class="topbar">
+    <h2>Sistema de Enseñanza Interactiva en VR</h2>
+    <div class="user-actions">
+      <button class="btn-outline" routerLink="/resultados">Rendimiento Global</button>
+      <button class="btn-text" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="content grid-dashboard">
+    
+    <section class="clases-section">
+      <div class="section-header">
+        <h3>Sesiones de Clase</h3>
+        <button class="btn-success" (click)="iniciarSesionClase()">▶ Nueva Clase</button>
+      </div>
+
+      <div class="clases-list">
+        <div class="clase-item-card" *ngFor="let clase of historialClases" [class.live]="clase.estado === 'en_curso'">
+          <div class="clase-info">
+            <h4>{{ clase.nombreCurso }}</h4>
+            <p>PIN: <strong>{{ clase.codigoPin }}</strong> | {{ clase.fecha }}</p>
+            <span class="status-badge" [class.badge-green]="clase.estado === 'en_curso'">
+              {{ clase.estado === 'en_curso' ? '● En Vivo' : 'Finalizada' }}
+            </span>
+          </div>
+          <button class="btn-outline-sm" [routerLink]="['/clase-config', clase.id]">
+            Gestionar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="modulos-section">
+      <div class="section-header">
+        <h3>Módulos de Conceptos</h3>
+        <button class="btn-primary" routerLink="/editor">+ Nuevo Módulo</button>
+      </div>
+
+      <div class="grid-container" *ngIf="modulos.length > 0; else sinModulos">
+        <div class="card" *ngFor="let modulo of modulos">
+          <div class="card-header">
+            <h4>{{ modulo.titulo }}</h4>
+            <span class="badge">{{ modulo.asignatura }}</span>
+          </div>
+          <p class="card-desc">{{ modulo.descripcion }}</p>
+          <div class="card-footer">
+            <button class="btn-link" [routerLink]="['/editor', modulo.id]">Editar</button>
+            <button class="btn-link text-danger" (click)="eliminarModulo(modulo)">Eliminar</button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #sinModulos>
+        <div class="empty-state">
+          <p>Aún no has creado módulos de conceptos.</p>
+          <button class="btn-primary" routerLink="/editor">Crear primer módulo</button>
+        </div>
+      </ng-template>
+    </section>
+
+  </main>
+</div>

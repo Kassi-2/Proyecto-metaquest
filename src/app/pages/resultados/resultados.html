@@ -1,0 +1,68 @@
+<div class="resultados-layout">
+  <header class="resultados-header">
+    <div class="header-left">
+      <button class="btn-back" routerLink="/dashboard">Volver al Dashboard</button>
+      <h2>Rendimiento Global de los Alumnos</h2>
+    </div>
+  </header>
+
+  <main class="resultados-content">
+    
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label for="filtroClase">Filtrar por Sesión:</label>
+        <select id="filtroClase" [(ngModel)]="filtroClaseSeleccionada" (change)="aplicarFiltro()">
+          <option value="Todas">Todas las sesiones</option>
+          <option *ngFor="let clase of clasesDisponibles" [value]="clase">{{ clase }}</option>
+        </select>
+      </div>
+      
+      <div class="metrics-summary">
+        <div class="metric-chip">Total Evaluados: <strong>{{ registrosFiltrados.length }}</strong></div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Sesión</th>
+            <th>Código Alumno</th>
+            <th>Estado</th>
+            <th>Progreso</th>
+            <th>Fallos Acumulados</th>
+            <th>Tiempo de Resolución</th>
+            <th>Puntaje Final</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reg of registrosFiltrados">
+            <td>{{ reg.nombreClase }}</td>
+            <td><strong>{{ reg.codigoAlumno }}</strong></td>
+            <td>
+              <span class="status-badge" [class.en-curso]="reg.estado === 'en_curso'" [class.finalizado]="reg.estado === 'finalizado'">
+                {{ reg.estado === 'en_curso' ? 'En Vivo' : 'Completado' }}
+              </span>
+            </td>
+            <td>{{ reg.paresCompletados }} / {{ reg.totalPares }} pares</td>
+            <td class="text-center">
+              <span class="error-pill" *ngIf="reg.intentosFallidos > 0">{{ reg.intentosFallidos }} errores</span>
+              <span class="perfect-pill" *ngIf="reg.intentosFallidos === 0">Perfecto</span>
+            </td>
+            <td>{{ formatearTiempo(reg.tiempoSegundos) }} min</td>
+            <td>
+              <div class="score-display" [ngClass]="{'score-high': reg.puntajeFinal >= 70, 'score-low': reg.puntajeFinal < 50}">
+                {{ reg.puntajeFinal }} pts
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="empty-state" *ngIf="registrosFiltrados.length === 0">
+        <p>No hay datos de rendimiento registrados para esta selección.</p>
+      </div>
+    </div>
+
+  </main>
+</div>

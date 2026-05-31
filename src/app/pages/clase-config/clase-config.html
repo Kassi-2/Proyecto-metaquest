@@ -1,0 +1,122 @@
+<div class="config-layout">
+  <header class="config-header">
+    <div class="meta-info">
+      <button class="btn-back" routerLink="/dashboard">Volver al Dashboard</button>
+      <h1>{{ claseActual.nombreCurso }}</h1>
+      <p>PIN de acceso en Visor VR: <strong>{{ claseActual.codigoPin }}</strong> | {{ claseActual.fecha }}</p>
+    </div>
+    <button class="btn-save" (click)="guardarConfiguracion()">Guardar Todo</button>
+  </header>
+
+  <nav class="tab-navigation">
+    <button [class.active]="pestanaActiva === 'modulos'" (click)="cambiarPestana('modulos')">
+      Conceptos
+    </button>
+    <button [class.active]="pestanaActiva === 'parametros'" (click)="cambiarPestana('parametros')">
+      Configuraciones
+    </button>
+    <button [class.active]="pestanaActiva === 'monitoreo'" (click)="cambiarPestana('monitoreo')">
+      Resultados
+    </button>
+  </nav>
+
+  <main class="tab-content">
+
+    <section *ngIf="pestanaActiva === 'modulos'" class="panel-sist5">
+      <h3>Selecciona los conceptos para esta clase</h3>
+      <p class="instruction">Los alumnos verán únicamente los conceptos marcados aquí.</p>
+      
+      <div class="scenarios-list">
+        <div class="scenario-row" *ngFor="let modulo of todosLosModulos">
+          <label class="checkbox-container">
+            <input type="checkbox" 
+                   [checked]="claseActual.actividadesAsignadasIds.includes(modulo.id!)"
+                   (change)="toggleModulo(modulo.id!)">
+            <span class="checkmark"></span>
+            <div class="scenario-info">
+              <h4>{{ modulo.titulo }}</h4>
+              <p>{{ modulo.descripcion }}</p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section *ngIf="pestanaActiva === 'parametros'" class="panel-sist6">
+      <h3>Configuración del Entorno VR</h3>
+      <p class="instruction">Ajusta la dificultad para los estudiantes.</p>
+
+      <div class="form-container">
+        <div class="form-group checkbox-group">
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="claseActual.mostrarPistas">
+            <span class="slider"></span>
+            Permitir al sistema dar pistas
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Tiempo máximo para emparejar todo</label>
+          <select [(ngModel)]="claseActual.tiempoLimiteMinutos">
+            <option [ngValue]="0">Sin límite de tiempo</option>
+            <option [ngValue]="5">3 Minutos</option>
+            <option [ngValue]="10">5 Minutos</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section *ngIf="pestanaActiva === 'monitoreo'" class="panel-sist7">
+      <div class="panel-title-live">
+        <h3>Resultados de la Sesión</h3>
+      </div>
+      <p class="instruction">Control en vivo. Las métricas finales estarán disponibles automáticamente al completarse la sesión.</p>
+      
+      <table class="live-table">
+        <thead>
+          <tr>
+            <th>Código Alumno</th>
+            <th>Estado</th>
+            <th>Progreso Actual en VR</th>
+            <th>Fallos al Emparejar</th>
+            <th>Tiempo Transcurrido</th>
+            <th>Puntaje</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let alum of alumnosConectados" [class.alert-row]="alum.fallos > 3 && alum.estado === 'en_curso'">
+            <td><strong>{{ alum.codigo }}</strong></td>
+            <td>
+              <span class="status-badge" [class.en-curso]="alum.estado === 'en_curso'" [class.finalizado]="alum.estado === 'finalizado'">
+                {{ alum.estado === 'en_curso' ? 'Jugando' : 'Finalizado' }}
+              </span>
+            </td>
+            <td>
+              <div class="progress-cell-container">
+                <span class="progress-text-label">{{ alum.pares }}</span>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" [style.width]="alum.progreso"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="error-pill" *ngIf="alum.fallos > 0">{{ alum.fallos }} errores</span>
+              <span class="perfect-pill" *ngIf="alum.fallos === 0">Perfecto</span>
+            </td>
+            <td>{{ alum.tiempo }} seg</td>
+            <td>
+              <strong *ngIf="alum.estado === 'finalizado'" class="score-text-highlight">{{ alum.puntaje }} pts</strong>
+              <span *ngIf="alum.estado === 'en_curso'" class="text-muted-dash">--</span>
+            </td>
+            <td>
+              <button class="btn-kick" *ngIf="alum.estado === 'en_curso'">Finalizar</button>
+              <span *ngIf="alum.estado === 'finalizado'">-</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
