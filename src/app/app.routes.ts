@@ -5,12 +5,17 @@ import { DashboardComponent } from './pages/dashboard/dashboard';
 import { ClaseConfigComponent } from './pages/clase-config/clase-config';
 import { EditorComponent } from './pages/editor/editor';
 import { ResultadosComponent } from './pages/resultados/resultados';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
-  { path: '', component: LoginComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' }, 
+  { path: 'login', component: LoginComponent },
+
+  // Rutas Protegidas
   {
     path: '',
     component: LayoutComponent,
+    canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'clase-config/:id', component: ClaseConfigComponent },
@@ -19,5 +24,6 @@ export const routes: Routes = [
       { path: 'resultados', component: ResultadosComponent },
     ],
   },
-  { path: '**', redirectTo: '' },
+  //
+  { path: '**', redirectTo: 'login' },
 ];
