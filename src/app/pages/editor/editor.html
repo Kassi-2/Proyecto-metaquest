@@ -1,55 +1,51 @@
 <div class="editor-layout">
-  <header class="editor-header">
+  <div class="page-header">
     <div>
-      <button class="btn-back" routerLink="/dashboard">Cancelar y Volver</button>
-      <h1>{{ esModoEdicion ? 'Editar Módulo de Conceptos' : 'Crear Nuevo Módulo' }}</h1>
+      <button class="btn-ghost" routerLink="/dashboard">← Volver</button>
+      <h1>{{ esModoEdicion ? 'Editar Módulo' : 'Nuevo Módulo' }}</h1>
     </div>
-    <button class="btn-save" [disabled]="editorForm.invalid" (click)="guardarModulo()">
+    <button class="btn-accent" [disabled]="editorForm.invalid" (click)="guardarModulo()">
       {{ esModoEdicion ? 'Guardar Cambios' : 'Crear Módulo' }}
     </button>
-  </header>
+  </div>
 
-  <form [formGroup]="editorForm" class="editor-form">
+  <form [formGroup]="editorForm">
     <div class="meta-card">
       <div class="form-row">
         <div class="form-group">
-          <label for="titulo">Título del Módulo</label>
+          <label for="titulo">Título</label>
           <input id="titulo" type="text" formControlName="titulo" placeholder="Ej: Redes y Capas OSI">
         </div>
-        
         <div class="form-group">
-          <label for="asignatura">Asignatura / Área</label>
+          <label for="asignatura">Asignatura</label>
           <input id="asignatura" type="text" formControlName="asignatura" placeholder="Ej: Telecomunicaciones">
         </div>
       </div>
-
       <div class="form-group">
         <label for="descripcion">Instrucciones</label>
-        <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Explica brevemente a los estudiantes qué van a emparejar"></textarea>
+        <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Explica a los estudiantes qué van a emparejar"></textarea>
       </div>
     </div>
 
     <div class="pairs-section">
       <div class="pairs-header">
-        <h3>Lista de Parejas: Concepto - Definición</h3>
-        <button type="button" class="btn-add" (click)="agregarPar()">+ Añadir Fila</button>
+        <h3>Concepto – Definición</h3>
+        <button type="button" class="btn-add" (click)="agregarPar()">+ Añadir fila</button>
       </div>
 
       <div formArrayName="pares" class="pairs-container">
         <div *ngFor="let par of paresFormArray.controls; let i = index" [formGroupName]="i" class="pair-row">
-          <span class="row-number">#{{ i + 1 }}</span>
-
+          <span class="row-number">{{ i + 1 }}</span>
           <div class="form-group row-input">
             <input type="text" formControlName="concepto" placeholder="Concepto">
           </div>
-
           <div class="form-group row-input-long">
             <input type="text" formControlName="definicion" placeholder="Definición">
           </div>
-
-          <button type="button" class="btn-delete" (click)="eliminarPar(i)" title="Eliminar fila">
-            x
-          </button>
+          <div class="form-group row-input">
+            <input type="text" formControlName="descripcion" placeholder="Descripción (opcional)">
+          </div>
+          <button type="button" class="btn-delete" (click)="eliminarPar(i)" title="Eliminar">✕</button>
         </div>
       </div>
     </div>

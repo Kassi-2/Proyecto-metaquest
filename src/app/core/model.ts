@@ -8,18 +8,21 @@ export interface ActividadEmparejamiento {
 export interface ParConceptoDefinicion {
   concepto: string;
   definicion: string;
+  descripcion?: string;
 }
 
 export interface SesionClase {
   id?: string;
+  sessionIdBackend?: number;
   nombreCurso: string;
   fecha: string;
   codigoPin: string;
   estado: 'en_curso' | 'finalizada';
   actividadesAsignadasIds: string[];
-  mostrarPistas: boolean;           
-  penalizacionPorFallo: number;     
-  tiempoLimiteMinutos: number;      
+  mostrarPistas: boolean;
+  penalizacionPorFallo: number;
+  tiempoLimiteMinutos: number;
+  modulos?: ActividadEmparejamiento[];
 }
 
 export interface RendimientoAlumno {
@@ -32,4 +35,16 @@ export interface RendimientoAlumno {
   intentosFallidos: number;
   tiempoSegundos: number;
   puntajeFinal: number;
+}
+
+export interface AlumnoSesion {
+  codigo: string;
+  estado: 'conectado' | 'respondio' | 'finalizado';
+  pares: string;
+  progreso: string;
+  fallos: number;
+  tiempo: number;
+  puntaje: number;
+  paresCompletados: number;
+  totalPares: number;
 }

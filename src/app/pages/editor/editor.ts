@@ -48,10 +48,11 @@ export class EditorComponent implements OnInit {
   get paresFormArray(): FormArray {
     return this.editorForm.get('pares') as FormArray;
   }
-  agregarPar(concepto = '', definicion = '') {
+  agregarPar(concepto = '', definicion = '', descripcion = '') {
     const parFormGroup = this.fb.group({
       concepto: [concepto, Validators.required],
-      definicion: [definicion, Validators.required]
+      definicion: [definicion, Validators.required],
+      descripcion: [descripcion]
     });
     this.paresFormArray.push(parFormGroup);
   }
@@ -77,7 +78,7 @@ export class EditorComponent implements OnInit {
         descripcion: modulo.descripcion
       });
       modulo.pares.forEach(par => {
-        this.agregarPar(par.concepto, par.definicion);
+        this.agregarPar(par.concepto, par.definicion, par.descripcion);
       });
     });
   }

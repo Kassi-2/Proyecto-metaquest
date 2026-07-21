@@ -4,12 +4,17 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth';
 
+interface ResponseCreateUser{
+  data : {id : number}
+}
+
 @Component({
   selector: 'app-login',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
+
 
 export class LoginComponent {
   private fb = inject(FormBuilder);
@@ -34,8 +39,8 @@ export class LoginComponent {
 
     if (this.esModoRegistro) {
       this.authService.registrarProfesor(this.authForm.value).subscribe({
-        next: (res) => {
-          console.log('Registro exitoso', res);
+        next: (res : ResponseCreateUser) => {
+          console.log('Registro exitoso', res.data.id);
           this.esModoRegistro = false;
           this.authForm.reset();
         },

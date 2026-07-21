@@ -1,122 +1,132 @@
-<div class="config-layout">
+<div>
   <header class="config-header">
     <div class="meta-info">
-      <button class="btn-back" routerLink="/dashboard">Volver al Dashboard</button>
-      <h1>{{ claseActual.nombreCurso }}</h1>
-      <p>PIN de acceso en Visor VR: <strong>{{ claseActual.codigoPin }}</strong> | {{ claseActual.fecha }}</p>
+      <button class="btn-ghost" routerLink="/dashboard">← Volver</button>
+      <input type="text" [(ngModel)]="claseActual.nombreCurso" class="title-input" placeholder="Nombre de la clase"
+        [readOnly]="rondaIniciada">
+      <p style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.25rem;">ID: #{{ claseActual.sessionIdBackend }} · {{ claseActual.fecha }}</p>
     </div>
-    <button class="btn-save" (click)="guardarConfiguracion()">Guardar Todo</button>
+    <button class="btn-accent" *ngIf="!rondaIniciada" (click)="guardarConfiguracion()">Guardar Todo</button>
+    <span class="readonly-badge" *ngIf="rondaIniciada">Clase iniciada — solo lectura</span>
   </header>
 
   <nav class="tab-navigation">
-    <button [class.active]="pestanaActiva === 'modulos'" (click)="cambiarPestana('modulos')">
-      Conceptos
-    </button>
-    <button [class.active]="pestanaActiva === 'parametros'" (click)="cambiarPestana('parametros')">
-      Configuraciones
-    </button>
-    <button [class.active]="pestanaActiva === 'monitoreo'" (click)="cambiarPestana('monitoreo')">
-      Resultados
-    </button>
+    <button [class.active]="pestanaActiva === 'modulos'" (click)="cambiarPestana('modulos')">Conceptos</button>
+    <button [class.active]="pestanaActiva === 'parametros'" (click)="cambiarPestana('parametros')">Configuraciones</button>
+    <button [class.active]="pestanaActiva === 'monitoreo'" (click)="cambiarPestana('monitoreo')">Resultados</button>
   </nav>
 
-  <main class="tab-content">
+  <section *ngIf="pestanaActiva === 'modulos'">
+    <h3>Selecciona los conceptos para esta clase</h3>
+    <p class="instruction">{{ rondaIniciada ? 'Módulos asignados a la clase (orden de secuencia).' : 'Marca los módulos y ordénalos según la secuencia deseada.' }}</p>
 
-    <section *ngIf="pestanaActiva === 'modulos'" class="panel-sist5">
-      <h3>Selecciona los conceptos para esta clase</h3>
-      <p class="instruction">Los alumnos verán únicamente los conceptos marcados aquí.</p>
-      
-      <div class="scenarios-list">
-        <div class="scenario-row" *ngFor="let modulo of todosLosModulos">
-          <label class="checkbox-container">
-            <input type="checkbox" 
-                   [checked]="claseActual.actividadesAsignadasIds.includes(modulo.id!)"
-                   (change)="toggleModulo(modulo.id!)">
-            <span class="checkmark"></span>
+    <div class="split-panel">
+      <div class="panel-left" *ngIf="!rondaIniciada">
+        <h4>Disponibles</h4>
+        <div class="scenarios-list">
+          <div class="scenario-row" *ngFor="let modulo of todosLosModulos"
+               [class.selected]="estaSeleccionado(modulo.id!)"
+               (click)="toggleModulo(modulo)">
+            <span class="check-indicator">{{ estaSeleccionado(modulo.id!) ? '✓' : '' }}</span>
             <div class="scenario-info">
               <h4>{{ modulo.titulo }}</h4>
               <p>{{ modulo.descripcion }}</p>
             </div>
-          </label>
+          </div>
         </div>
       </div>
-    </section>
 
-    <section *ngIf="pestanaActiva === 'parametros'" class="panel-sist6">
-      <h3>Configuración del Entorno VR</h3>
-      <p class="instruction">Ajusta la dificultad para los estudiantes.</p>
-
-      <div class="form-container">
-        <div class="form-group checkbox-group">
-          <label class="toggle-switch">
-            <input type="checkbox" [(ngModel)]="claseActual.mostrarPistas">
-            <span class="slider"></span>
-            Permitir al sistema dar pistas
-          </label>
+      <div class="panel-right" [class.panel-full]="rondaIniciada">
+        <h4>Orden de secuencia <span class="badge-count">{{ modulosSeleccionados.length }}</span></h4>
+        <div class="badge-list" *ngIf="modulosSeleccionados.length > 0; else sinSeleccion">
+          <div class="badge-item" *ngFor="let mod of modulosSeleccionados; let i = index">
+            <span class="badge-num">{{ i + 1 }}</span>
+            <span class="badge-label">{{ mod.titulo }}</span>
+            <div class="order-actions" *ngIf="!rondaIniciada">
+              <button class="btn-order" (click)="subirOrden(i)" [disabled]="i === 0" title="Subir">▲</button>
+              <button class="btn-order" (click)="bajarOrden(i)" [disabled]="i === modulosSeleccionados.length - 1" title="Bajar">▼</button>
+            </div>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label>Tiempo máximo para emparejar todo</label>
-          <select [(ngModel)]="claseActual.tiempoLimiteMinutos">
-            <option [ngValue]="0">Sin límite de tiempo</option>
-            <option [ngValue]="5">3 Minutos</option>
-            <option [ngValue]="10">5 Minutos</option>
-          </select>
-        </div>
+        <ng-template #sinSeleccion>
+          <p class="empty-msg">Selecciona módulos desde la lista de disponibles.</p>
+        </ng-template>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section *ngIf="pestanaActiva === 'monitoreo'" class="panel-sist7">
-      <div class="panel-title-live">
-        <h3>Resultados de la Sesión</h3>
+  <section *ngIf="pestanaActiva === 'parametros'">
+    <h3>Configuración del Entorno VR</h3>
+    <p class="instruction">Ajusta la dificultad para los estudiantes.</p>
+
+    <div class="form-container">
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="claseActual.mostrarPistas">
+          Permitir al sistema dar pistas
+        </label>
       </div>
-      <p class="instruction">Control en vivo. Las métricas finales estarán disponibles automáticamente al completarse la sesión.</p>
-      
-      <table class="live-table">
-        <thead>
-          <tr>
-            <th>Código Alumno</th>
-            <th>Estado</th>
-            <th>Progreso Actual en VR</th>
-            <th>Fallos al Emparejar</th>
-            <th>Tiempo Transcurrido</th>
-            <th>Puntaje</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let alum of alumnosConectados" [class.alert-row]="alum.fallos > 3 && alum.estado === 'en_curso'">
-            <td><strong>{{ alum.codigo }}</strong></td>
-            <td>
-              <span class="status-badge" [class.en-curso]="alum.estado === 'en_curso'" [class.finalizado]="alum.estado === 'finalizado'">
-                {{ alum.estado === 'en_curso' ? 'Jugando' : 'Finalizado' }}
-              </span>
-            </td>
-            <td>
-              <div class="progress-cell-container">
-                <span class="progress-text-label">{{ alum.pares }}</span>
-                <div class="progress-bar-bg">
-                  <div class="progress-bar-fill" [style.width]="alum.progreso"></div>
-                </div>
+      <div class="form-group">
+        <label>Tiempo por pregunta</label>
+        <select [(ngModel)]="claseActual.tiempoLimiteMinutos">
+          <option [ngValue]="0">Sin límite</option>
+          <option [ngValue]="5">3 Minutos</option>
+          <option [ngValue]="10">5 Minutos</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="pestanaActiva === 'monitoreo'">
+    <h3>Resultados de la Sesión</h3>
+    <p class="instruction">Conexión en vivo vía WebSocket.</p>
+
+    <div class="live-count" *ngIf="alumnosConectados.length === 0">
+      <p>Esperando estudiantes...</p>
+    </div>
+
+    <table class="live-table" *ngIf="alumnosConectados.length > 0">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Estado</th>
+          <th>Progreso</th>
+          <th>Fallos</th>
+          <th>Tiempo</th>
+          <th>Puntaje</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let alum of alumnosConectados" [class.alert-row]="alum.fallos > 3 && alum.estado === 'conectado'">
+          <td><strong>{{ alum.codigo }}</strong></td>
+          <td>
+            <span class="status-badge"
+                  [class.conectado]="alum.estado === 'conectado'"
+                  [class.respondio]="alum.estado === 'respondio'"
+                  [class.finalizado]="alum.estado === 'finalizado'">
+              {{ alum.estado === 'conectado' ? 'Jugando' : alum.estado === 'respondio' ? 'Respondió' : 'Completado' }}
+            </span>
+          </td>
+          <td>
+            <div class="progress-cell-container">
+              <span class="progress-text-label">{{ alum.pares }}</span>
+              <div class="progress-bar-bg" *ngIf="alum.totalPares > 0">
+                <div class="progress-bar-fill" [style.width]="alum.progreso"></div>
               </div>
-            </td>
-            <td>
-              <span class="error-pill" *ngIf="alum.fallos > 0">{{ alum.fallos }} errores</span>
-              <span class="perfect-pill" *ngIf="alum.fallos === 0">Perfecto</span>
-            </td>
-            <td>{{ alum.tiempo }} seg</td>
-            <td>
-              <strong *ngIf="alum.estado === 'finalizado'" class="score-text-highlight">{{ alum.puntaje }} pts</strong>
-              <span *ngIf="alum.estado === 'en_curso'" class="text-muted-dash">--</span>
-            </td>
-            <td>
-              <button class="btn-kick" *ngIf="alum.estado === 'en_curso'">Finalizar</button>
-              <span *ngIf="alum.estado === 'finalizado'">-</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-  </main>
+            </div>
+          </td>
+          <td>
+            <span class="error-pill" *ngIf="alum.fallos > 0">{{ alum.fallos }} errores</span>
+            <span class="perfect-pill" *ngIf="alum.fallos === 0 && alum.estado === 'finalizado'">Perfecto</span>
+            <span class="text-muted-dash" *ngIf="alum.estado !== 'finalizado'">--</span>
+          </td>
+          <td>{{ alum.tiempo }}s</td>
+          <td>
+            <strong *ngIf="alum.estado === 'finalizado'" class="score-text-highlight">{{ alum.puntaje }} pts</strong>
+            <span *ngIf="alum.estado !== 'finalizado'" class="text-muted-dash">--</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 </div>

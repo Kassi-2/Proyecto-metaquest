@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/api/auth'; // REVISAR RUTA LUEGO - CAMBIAR
+  private apiUrl = 'http://localhost:3000/auth';
 
   iniciarSesion(credenciales: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credenciales);
