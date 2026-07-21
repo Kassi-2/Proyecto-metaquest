@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { ActividadEmparejamiento, SesionClase } from './model';
+import { environment } from '../../environments/environment';
 
 interface BackendExercise {
   id: number;
@@ -31,6 +32,7 @@ interface BackendSessionDetail extends BackendSession {
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
 
   private mapToFrontend(ex: BackendExercise): ActividadEmparejamiento {
     const itemsSorted = [...ex.items].sort((a, b) => a.correctCategoryId - b.correctCategoryId);
@@ -73,39 +75,39 @@ export class ApiService {
   }
 
   obtenerProblemas(): Observable<ActividadEmparejamiento[]> {
-    return this.http.get<BackendExercise[]>(`http://localhost:3000/content/exercises`).pipe(
+    return this.http.get<BackendExercise[]>(`${this.apiUrl}/content/exercises`).pipe(
       map(lista => lista.map(ex => this.mapToFrontend(ex)))
     );
   }
 
   obtenerModuloPorId(id: string): Observable<ActividadEmparejamiento> {
-    return this.http.get<BackendExercise>(`http://localhost:3000/content/exercise/${id}`).pipe(
+    return this.http.get<BackendExercise>(`${this.apiUrl}/content/exercise/${id}`).pipe(
       map(ex => this.mapToFrontend(ex))
     );
   }
 
   crearModulo(modulo: ActividadEmparejamiento): Observable<any> {
-    return this.http.post(`http://localhost:3000/content/exercise`, this.exerciseToBackend(modulo));
+    return this.http.post(`${this.apiUrl}/content/exercise`, this.exerciseToBackend(modulo));
   }
 
   actualizarModulo(id: string, modulo: ActividadEmparejamiento): Observable<any> {
-    return this.http.patch(`http://localhost:3000/content/exercise/${id}`, this.exerciseToBackend(modulo));
+    return this.http.patch(`${this.apiUrl}/content/exercise/${id}`, this.exerciseToBackend(modulo));
   }
 
   crearSesion(nombre: string): Observable<SesionClase> {
-    return this.http.post<BackendSession>(`http://localhost:3000/gamification/session`, { name: nombre }).pipe(
+    return this.http.post<BackendSession>(`${this.apiUrl}/gamification/session`, { name: nombre }).pipe(
       map(s => this.sessionToFrontend(s))
     );
   }
 
   obtenerSesionesActivas(): Observable<SesionClase[]> {
-    return this.http.get<BackendSession[]>(`http://localhost:3000/gamification/active-sessions`).pipe(
+    return this.http.get<BackendSession[]>(`${this.apiUrl}/gamification/active-sessions`).pipe(
       map(lista => lista.map(s => this.sessionToFrontend(s)))
     );
   }
 
   obtenerTodasLasSesiones(): Observable<SesionClase[]> {
-    return this.http.get<BackendSession[]>(`http://localhost:3000/gamification/sessions`).pipe(
+    return this.http.get<BackendSession[]>(`${this.apiUrl}/gamification/sessions`).pipe(
       map(lista => lista.map(s => this.sessionToFrontend(s)))
     );
   }
@@ -114,7 +116,7 @@ export class ApiService {
     sesion: SesionClase;
     modulos: ActividadEmparejamiento[];
   }> {
-    return this.http.get<BackendSessionDetail>(`http://localhost:3000/gamification/session/${id}`).pipe(
+    return this.http.get<BackendSessionDetail>(`${this.apiUrl}/gamification/session/${id}`).pipe(
       map(detalle => ({
         sesion: this.sessionToFrontend(detalle),
         modulos: (detalle.exercises || []).map(ex => this.mapToFrontend(ex)),
@@ -123,7 +125,7 @@ export class ApiService {
   }
 
   iniciarRonda(sessionId: number, questionIds: number[], timePerQuestionSeconds: number, totalRoundTimeMinutes: number): Observable<any> {
-    return this.http.post(`http://localhost:3000/gamification/start-round-flow`, {
+    return this.http.post(`${this.apiUrl}/gamification/start-round-flow`, {
       sessionId,
       questionIds,
       timePerQuestionSeconds,
@@ -132,18 +134,18 @@ export class ApiService {
   }
 
   cerrarSesion(sessionId: number): Observable<any> {
-    return this.http.post(`http://localhost:3000/gamification/close-session/${sessionId}`, {});
+    return this.http.post(`${this.apiUrl}/gamification/close-session/${sessionId}`, {});
   }
 
   eliminarModuloBackend(id: string): Observable<any> {
-    return this.http.delete(`http://localhost:3000/content/exercise/${id}`);
+    return this.http.delete(`${this.apiUrl}/content/exercise/${id}`);
   }
 
   obtenerReporteGlobal(): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:3000/statistics/report`);
+    return this.http.get<any[]>(`${this.apiUrl}/statistics/report`);
   }
 
   obtenerReportePorSesion(sessionId: number): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:3000/statistics/report/session/${sessionId}`);
+    return this.http.get<any[]>(`${this.apiUrl}/statistics/report/session/${sessionId}`);
   }
 }
