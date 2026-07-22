@@ -55,7 +55,8 @@ export class AuthService {
 
   // Retorna true si el token existe en localStorage
   estaAutenticado(): boolean {
-    return !!this.obtenerToken();
+    const token = this.obtenerToken();
+    return !!token && token !== 'null' && token !== 'undefined';
   }
 
   // Obtiene el endpoint /auth/me

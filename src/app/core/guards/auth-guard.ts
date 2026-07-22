@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../auth'; // Ajusta la ruta si es necesario
+import { CanActivateFn, CanActivateChildFn, Router } from '@angular/router';
+import { AuthService } from '../auth';
 import Swal from 'sweetalert2';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn | CanActivateChildFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 // Si el usuario tiene token, se le permite pasar, de lo contrario se muestra una alerta y

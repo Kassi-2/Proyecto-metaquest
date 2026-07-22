@@ -9,7 +9,6 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
     <div class="shell">
       <aside class="sidebar">
         <div class="sidebar-brand">
-          <span class="brand-mark">M</span>
         </div>
         <nav class="sidebar-nav">
           <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">Clases</a>

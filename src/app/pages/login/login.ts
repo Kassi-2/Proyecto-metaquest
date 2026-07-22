@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth';
+import Swal from 'sweetalert2';
 
 interface ResponseCreateUser{
   data : {id : number}
@@ -14,8 +15,6 @@ interface ResponseCreateUser{
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-
-
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
@@ -44,7 +43,15 @@ export class LoginComponent {
           this.esModoRegistro = false;
           this.authForm.reset();
         },
-        error: (err) => console.error('Error en el registro', err)
+        error: (err) => {
+          console.error('Error en el registro', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Ocurrió un error al intentar registrar el usuario.',
+            confirmButtonColor: '#3085d6'
+          });
+        }
       });
     } else {
       const { email, password } = this.authForm.value;
@@ -53,7 +60,15 @@ export class LoginComponent {
           console.log('Login exitoso', res);
           this.router.navigate(['/dashboard']); 
         },
-        error: (err) => console.error('Error al iniciar sesión', err)
+        error: (err) => {
+          console.error('Error al iniciar sesión', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso Denegado',
+            text: 'Credenciales incorrectas. Por favor, intenta nuevamente.',
+            confirmButtonColor: '#d33'
+          });
+        }
       });
     }
   }
