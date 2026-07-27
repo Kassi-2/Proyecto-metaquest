@@ -10,6 +10,7 @@ interface BackendExercise {
   asignatura: string | null;
   descripcion: string | null;
   createdAt: string;
+  isActive: boolean;
   categories: { id: number; name: string; descripcion: string | null; exerciseId: number }[];
   items: { id: number; textContent: string; exerciseId: number; correctCategoryId: number }[];
 }

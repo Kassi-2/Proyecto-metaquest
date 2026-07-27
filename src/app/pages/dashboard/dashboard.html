@@ -4,7 +4,34 @@
 </div>
 
 <div class="grid-dashboard">
+  <section>
+    <div class="section-header">
+      <h3>Catálogo de Módulos</h3>
+      <button class="btn-outline" [routerLink]="['/editor']">+ Nuevo Módulo</button>
+    </div>
 
+    <div class="scroll-list">
+      <div class="clase-item-card" *ngFor="let modulo of modulos">
+        <div class="clase-info">
+          <h4>{{ modulo.titulo }}</h4>
+          <p>{{ modulo.asignatura }}</p>
+          <div class="badge-list-sm">
+            <span class="status-badge" style="background-color: var(--bg-secondary); color: var(--text-primary);">
+              {{ modulo.pares.length }} pares configurados
+            </span>
+          </div>
+        </div>
+        
+        <div class="clase-actions">
+          <button class="btn-outline-sm" [routerLink]="['/editor', modulo.id]">Editar</button>
+          <button class="btn-ghost" style="color: #8C3A2B;" (click)="eliminarModulo(modulo)">Eliminar</button>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="modulos.length === 0">
+        <p>No hay módulos en el catálogo.</p>
+      </div>
+    </div>
+  </section>
   <section>
     <div class="section-header">
       <h3>En curso</h3>
