@@ -81,7 +81,7 @@ export class EditorComponent implements OnInit {
    */
   agregarPar(concepto = '', definicion = '', descripcion = '') {
     const parFormGroup = this.fb.group({
-      concepto: [concepto, Validators.required],
+      concepto: [concepto, [Validators.required, Validators.maxLength(100)]], 
       definicion: [definicion, Validators.required],
       descripcion: [descripcion]
     });

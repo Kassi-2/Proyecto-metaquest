@@ -36,8 +36,8 @@
       <div formArrayName="pares" class="pairs-container">
         <div *ngFor="let par of paresFormArray.controls; let i = index" [formGroupName]="i" class="pair-row">
           <span class="row-number">{{ i + 1 }}</span>
-          <div class="form-group row-input">
-            <input type="text" formControlName="concepto" placeholder="Concepto">
+          <div class="form-group row-input" style="position: relative;">
+            <input type="text" formControlName="concepto" placeholder="Concepto" maxlength="100">
           </div>
           <div class="form-group row-input-long">
             <input type="text" formControlName="definicion" placeholder="Definición">

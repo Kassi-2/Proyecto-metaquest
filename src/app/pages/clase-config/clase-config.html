@@ -60,14 +60,8 @@
     <p class="instruction">Ajusta la dificultad para los estudiantes.</p>
 
     <div class="form-container">
-      <div class="form-group checkbox-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="claseActual.mostrarPistas">
-          Permitir al sistema dar pistas
-        </label>
-      </div>
       <div class="form-group">
-        <label>Tiempo por pregunta</label>
+        <label>Tiempo límite para responder</label>
         <select [(ngModel)]="claseActual.tiempoLimiteMinutos">
           <option [ngValue]="0">Sin límite</option>
           <option [ngValue]="5">3 Minutos</option>
@@ -90,7 +84,6 @@
         <tr>
           <th>Código</th>
           <th>Estado</th>
-          <th>Progreso</th>
           <th>Fallos</th>
           <th>Tiempo</th>
           <th>Puntaje</th>
@@ -106,14 +99,6 @@
                   [class.finalizado]="alum.estado === 'finalizado'">
               {{ alum.estado === 'conectado' ? 'Jugando' : alum.estado === 'respondio' ? 'Respondió' : 'Completado' }}
             </span>
-          </td>
-          <td>
-            <div class="progress-cell-container">
-              <span class="progress-text-label">{{ alum.pares }}</span>
-              <div class="progress-bar-bg" *ngIf="alum.totalPares > 0">
-                <div class="progress-bar-fill" [style.width]="alum.progreso"></div>
-              </div>
-            </div>
           </td>
           <td>
             <span class="error-pill" *ngIf="alum.fallos > 0">{{ alum.fallos }} errores</span>
